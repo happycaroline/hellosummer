@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <link rel="stylesheet" href="">
+    <script src="build/jquery-1.11.3.js"></script>
+    <script src="build/react.js"  type="text/javascript"></script>
+    <script src="build/JSXTransformer.js" type="text/javascript"></script>
+</head>
+<body>
+    <div id="demo">
+        
+    </div>
+    <script type="text/jsx">
+        // 使用 React.createClass 创建一个组件
+        var DemoComponent = React.createClass({
+            //生命周期：初始化
+            getInitialState:function(){
+                return {
+                    loading:true,
+                    title:"我最近看过的电影",
+                    movies:[{
+                        id:1,
+                        name:"萝莉的猴神大叔", 
+                        score:95
+                    },{
+                        id:2,
+                        name:"夏洛特烦恼",
+                        score:92
+                    },{
+                        id:3,
+                        name:"万物理论",
+                        score:96
+                    },{
+                        id:4,
+                        name:"追风筝的人",
+                        score:95
+                    }]
+                }
+            },
+            //生命周期：初始化完成
+            componentDidMount:function(){
+                    this.fetchData();
+            },
+            hideLoad:function(){
+                this.setState({loading:false})
+            },
+            fetchData:function(){
+                var data=  {
+                    ret: 1,
+                    result: [{
+                        id: 1,
+                        name: "萝莉的猴神大叔2",
+                        score: 95
+                    }, {
+                        id: 2,
+                        name: "夏洛特烦恼2",
+                        score: 92
+                    }, {
+                        id: 3,
+                        name: "万物理论2",
+                        score: 96
+                    }, {
+                        id: 4,
+                        name: "追风筝的人2",
+                        score: 95
+                    }]
+                }
+                var _this=this;
+                setTimeout(function(){
+                    _this.hideLoad();
+                    _this.setState({movies:data.result});
+                },1000)
+                
+            },
+            remove:function(movie){
+                var name=movie.name;
+                var movieList=this.state.movies;
+                var _this=this;
+                for(var i=0;i<movieList.length;i++){
+                    if(name==movieList[i].name){
+                        movieList.splice(i,1)
+                        _this.setState({movies:movieList})
+
+                    }
+                }
+            },
+            add:function(e){
+                e.preventDefault();
+                var refs=this.refs;
+                var name=React.findDOMNode(refs.movieName).value;
+                var score=React.findDOMNode(refs.movieScore).value;
+                var movieitem,movieList=this.state.movies;
+                if(name!=""&&score!=""){
+                    movieitem={
+                        id:Date.now(),
+                        name:name,
+                        score:score
+                    };
+                    movieList.push(movieitem);
+                    this.setState({movies:movieList})
+                }
+            },
+            // 使用 render 方法自动渲染 DOM
+            render: function () {
+                var _this=this,loading;
+                var movieList=this.state.movies.map(function(movie){
+                    return (
+                        <li className="movie-item">
+                            <span className="movie-name">{movie.name}</span>
+                            -
+                            <span className="movie-score">{movie.score}</span>
+                            <input type="button" value="删除" onClick={_this.remove.bind(null,movie)}/>
+                        </li>
+                        )
+                }.bind(this));
+                if(this.state.loading){
+                    return <img src="img/loding.gif"/>
+                }
+                return (
+                    <div className="component-hello">
+                        <h1 className="hello-title">Hello React</h1>
+                        <p  className="hello-desc">React 初探</p>
+                        {loading}
+                        <div className="hello-movies">
+                            <p2>{this.state.title}</p2>
+                            <form onSubmit={this.add}>
+                                <input type="text" ref="movieName"  placeholder="输入电影名称"/>
+                                <input type="text" ref="movieScore"  placeholder="输入电影评分"/>
+                                <input type="submit"  value="提交"/>
+                            </form>
+                            <ul>
+                                {movieList}
+                            </ul>
+                        </div>
+                    </div>
+                )
+            }
+        });
+
+        // 将组件插入到网页中指定的位置
+        React.render(<DemoComponent />, document.getElementById('demo'));
+    </script>
+</body>
+</html>
